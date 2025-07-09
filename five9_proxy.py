@@ -48,29 +48,10 @@ def status():
     payload = SOAP_TEMPLATE.format(number=number)
     response = requests.post(FIVE9_SOAP_URL, headers=headers, data=payload)
 
-    try:
-        root = ET.fromstring(response.text)
-        namespaces = {"soapenv": "http://schemas.xmlsoap.org/soap/envelope/"}
-        body = root.find("soapenv:Body", namespaces)
-        record_fields = body.findall(".//field")
+    print("📥 XML recebido da Five9:\n", response.text[:3000])  # loga os primeiros 3000 caracteres
 
-        result = {}
-        print("🟨 Início da listagem de campos retornados pela Five9:")
-        for field in record_fields:
-            name_elem = field.find("name")
-            value_elem = field.find("value")
-            if name_elem is not None and value_elem is not None:
-                raw_key = name_elem.text.strip()
-                normalized_key = re.sub(r'\W+', '_', raw_key.lower())
-                value = value_elem.text.strip() if value_elem.text else ""
-                result[normalized_key] = value
-                print(f"🟩 Campo: '{raw_key}' → '{normalized_key}' = '{value}'")
-        print("🟨 Fim da listagem.\n")
+    return response.text, 200, {"Content-Type": "text/xml"}
 
-        return jsonify(result)
-
-    except ET.ParseError:
-        return jsonify({"error": "Erro ao analisar XML da resposta da Five9"}), 500
 
 
 if __name__ == "__main__":
