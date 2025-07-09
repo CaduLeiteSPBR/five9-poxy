@@ -1,8 +1,11 @@
 from flask import Flask, request, jsonify
+from flask_cors import CORS  # ⬅ importa o módulo CORS
 import requests
 from base64 import b64encode
 
 app = Flask(__name__)
+CORS(app)  # ⬅ habilita CORS para todas as rotas
+
 
 FIVE9_USER = "cleite@blueruby.info"
 FIVE9_PASS = "B0n1f@c100425"
