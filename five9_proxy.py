@@ -14,10 +14,12 @@ SOAP_TEMPLATE = """<?xml version="1.0" encoding="UTF-8"?>
   <soapenv:Header/>
   <soapenv:Body>
     <ws:getContactRecords>
-      <lookupCriteria>
-        <fieldName>number1</fieldName>
-        <fieldValue>{number}</fieldValue>
-      </lookupCriteria>
+      <criteria>
+        <field>
+          <name>number1</name>
+          <value>{number}</value>
+        </field>
+      </criteria>
     </ws:getContactRecords>
   </soapenv:Body>
 </soapenv:Envelope>
