@@ -9,12 +9,10 @@ import re
 app = Flask(__name__)
 CORS(app)
 
-# Credenciais da API Five9
 FIVE9_USER = "cleite@blueruby.info"
 FIVE9_PASS = "B0n1f@c100425"
 FIVE9_SOAP_URL = "https://api.five9.com/wsadmin/v15/AdminWebService"
 
-# Template SOAP para getContactRecords
 SOAP_TEMPLATE = """<?xml version="1.0" encoding="UTF-8"?>
 <soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/"
                   xmlns:ws="http://service.admin.ws.five9.com/">
@@ -48,10 +46,31 @@ def status():
     payload = SOAP_TEMPLATE.format(number=number)
     response = requests.post(FIVE9_SOAP_URL, headers=headers, data=payload)
 
-    print("📥 XML recebido da Five9:\n", response.text[:3000])  # loga os primeiros 3000 caracteres
+    try:
+        root = ET.fromstring(response.text)
+        ns = {"env": "http://schemas.xmlsoap.org/soap/envelope/"}
 
-    return response.text, 200, {"Content-Type": "text/xml"}
+        body = root.find("env:Body", ns)
+        if body is None:
+            return jsonify({"error": "Sem body na resposta"}), 500
 
+        # Extrai todos os campos e valores
+        field_names = [f.text.strip() for f in body.findall(".//fields")]
+        data_values = [d.text.strip() if d.text else "" for d in body.findall(".//records/values/data")]
+
+        result = dict(zip(
+            [re.sub(r'\W+', '_', name.lower()) for name in field_names],
+            data_values
+        ))
+
+        return jsonify({
+            "last_disposition": result.get("last_disposition", ""),
+            "message": result.get("message", ""),
+            "debug": result  # opcional: remover depois
+        })
+
+    except ET.ParseError:
+        return jsonify({"error": "Erro ao analisar XML da resposta da Five9"}), 500
 
 
 if __name__ == "__main__":
