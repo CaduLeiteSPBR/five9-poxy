@@ -1,0 +1,9 @@
+services:
+  - type: web
+    name: five9-proxy
+    env: python
+    buildCommand: ""
+    startCommand: python five9_proxy.py
+    envVars:
+      - key: PORT
+        value: 10000
