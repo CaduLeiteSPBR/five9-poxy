@@ -8,7 +8,7 @@ import os
 app = Flask(__name__)
 CORS(app)
 
-# Credenciais e endpoint da Five9
+# Credenciais da API Five9
 FIVE9_USER = "cleite@blueruby.info"
 FIVE9_PASS = "B0n1f@c100425"
 FIVE9_SOAP_URL = "https://api.five9.com/wsadmin/v15/AdminWebService"
@@ -58,11 +58,13 @@ def status():
             name_elem = field.find("name")
             value_elem = field.find("value")
             if name_elem is not None and value_elem is not None:
-                result[name_elem.text] = value_elem.text
+                # Normaliza: "Last Disposition" → "last_disposition"
+                normalized_key = name_elem.text.strip().lower().replace(" ", "_")
+                result[normalized_key] = value_elem.text.strip()
 
         return jsonify({
-            "last_disposition": result.get("last_disposition") or result.get("lastDisposition") or "",
-            "message": result.get("message") or ""
+            "last_disposition": result.get("last_disposition", ""),
+            "message": result.get("message", "")
         })
 
     except ET.ParseError:
