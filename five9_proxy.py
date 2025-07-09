@@ -14,16 +14,18 @@ SOAP_TEMPLATE = """<?xml version="1.0" encoding="UTF-8"?>
   <soapenv:Header/>
   <soapenv:Body>
     <ws:getContactRecords>
-      <criteria>
-        <field>
-          <name>number1</name>
+      <lookupCriteria>
+        <contactIdField>number1</contactIdField>
+        <criteria>
+          <field>number1</field>
           <value>{number}</value>
-        </field>
-      </criteria>
+        </criteria>
+      </lookupCriteria>
     </ws:getContactRecords>
   </soapenv:Body>
 </soapenv:Envelope>
 """
+
 
 
 @app.route("/status", methods=["GET"])
