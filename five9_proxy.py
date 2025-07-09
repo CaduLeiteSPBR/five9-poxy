@@ -14,12 +14,15 @@ SOAP_TEMPLATE = """<?xml version="1.0" encoding="UTF-8"?>
   <soapenv:Header/>
   <soapenv:Body>
     <ws:getContactRecords>
-      <domain>blueruby</domain>
-      <number>{number}</number>
+      <lookupCriteria>
+        <fieldName>number1</fieldName>
+        <fieldValue>{number}</fieldValue>
+      </lookupCriteria>
     </ws:getContactRecords>
   </soapenv:Body>
 </soapenv:Envelope>
 """
+
 
 @app.route("/status", methods=["GET"])
 def status():
